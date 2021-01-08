@@ -1,14 +1,24 @@
 let running = false;
 let placeCell = false;
 
-let cols = 50;
-let rows = 23;
-
+let cols = 40;
+let rows = 24;
 let tileSize = 25;
-let board = new Array(rows);
 
-function keyPressed() {
-  if (key == 'r') running = true;
+let gen;
+let board;
+
+function reset() {
+  gen = 0;
+  running = false;
+  board = new Array(rows);
+
+  for (let i = 0; i < rows; i++) {
+    board[i] = new Array(cols)
+    for (let j = 0; j < cols; j++) {
+      board[i][j] = false;
+    }
+  }
 }
 
 function mousePressed() {
@@ -20,24 +30,19 @@ function mouseReleased() {
 }
 
 function setup() {
-  createCanvas(cols * tileSize, rows * tileSize);
-
-  for (let i = 0; i < rows; i++) {
-    board[i] = new Array(cols)
-    for (let j = 0; j < cols; j++) {
-      board[i][j] = false;
-    }
-  }
+  let c = createCanvas(cols * tileSize, rows * tileSize);
+  select('.canvas').child(c);
+  reset();
 }
 
 function showBoard() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       if (board[i][j]) fill('yellow');
-      else fill('coral')
+      else fill('black');
 
-      strokeWeight(2);
-      stroke('lightblue');
+      strokeWeight(1);
+      stroke(3, 207, 252, 40);
       rect(j * tileSize, i * tileSize, tileSize, tileSize);
     }
   }
@@ -97,15 +102,20 @@ function draw() {
   background(0);
   showBoard();
 
+  fill(255);
+  textSize(50);
+  noStroke();
+  text(`Generation: ${gen}`, 50, 50);
+
   if (running) {
     nextGen();
     frameRate(20);
+    gen++;
   }
 
-  if (placeCell) {
+  if (!running && placeCell) {
     let i = floor(map(mouseX, 0, width, 0, cols));
     let j = floor(map(mouseY, 0, height, 0, rows));
-
-    board[j][i] = true;
+    if (0 <= mouseX && mouseX < width && 0 <= mouseY && mouseY < height) board[j][i] = true;
   }
 }
